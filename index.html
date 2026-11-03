@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IssueSolver — Resolve People's Issues</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f1f5f9; color: #0f172a; }
+  header { background: #fff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 1rem; }
+  nav { display: flex; gap: 1rem; align-items: center; padding: 1rem 0; }
+  .logo { font-weight: 700; color: #2563eb; font-size: 1.25rem; }
+  .btn { background: #2563eb; color: #fff; padding: .5rem 1rem; border-radius: .5rem; text-decoration: none; border: none; cursor: pointer; font-size: .9rem; }
+  .btn:hover { background: #1d4ed8; }
+  .hero { background: linear-gradient(180deg,#2563eb,#1d4ed8); color: #fff; padding: 4rem 0; text-align: center; }
+  .hero h2 { font-size: 2.5rem; margin-bottom: .75rem; }
+  .hero p { color: #bfdbfe; margin-bottom: 1.5rem; }
+  .search { display: flex; gap: .5rem; background: #fff; border-radius: .5rem; padding: .5rem; max-width: 600px; margin: 0 auto; }
+  .search input { flex: 1; border: none; outline: none; padding: .5rem; font-size: 1rem; color: #0f172a; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 1rem; padding: 3rem 0; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: .75rem; padding: 1.25rem; }
+  .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+  .issue { background: #fff; border: 1px solid #e2e8f0; border-radius: .75rem; padding: 1.25rem; margin-bottom: .75rem; display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; }
+  .badge { font-size: .75rem; padding: .2rem .6rem; border-radius: 999px; }
+  .open { background: #fef3c7; color: #92400e; }
+  .progress { background: #dbeafe; color: #1e40af; }
+  .resolved { background: #dcfce7; color: #166534; }
+  .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
+  .form { background: #fff; border: 1px solid #e2e8f0; border-radius: .75rem; padding: 1.5rem; max-width: 640px; margin: 0 auto; }
+  .form label { display: block; font-size: .9rem; font-weight: 500; margin-bottom: .25rem; margin-top: .75rem; }
+  .form input, .form select, .form textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: .5rem; padding: .6rem; font-size: .95rem; }
+  .form textarea { min-height: 120px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  footer { text-align: center; padding: 2rem 0; color: #64748b; font-size: .85rem; }
+  .hidden { display: none; }
+  .tab { cursor: pointer; padding: .5rem 1rem; border-radius: .5rem; }
+  .tab.active { background: #2563eb; color: #fff; }
+  .tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <nav>
+      <span class="logo">IssueSolver</span>
+      <a href="#" onclick="show('home')" class="tab active" id="t-home">Home</a>
+      <a href="#" onclick="show('feed')" class="tab" id="t-feed">Issues</a>
+      <a href="#" onclick="show('submit')" class="tab" id="t-submit">Submit</a>
+      <span style="flex:1"></span>
+      <button class="btn" onclick="show('submit')">Submit Issue</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section id="home">
+    <div class="hero">
+      <div class="container">
+        <h2>Solve real problems, together.</h2>
+        <p>Submit your issue. Get help from verified experts and the community.</p>
+        <div class="search">
+          <input id="q" placeholder="Search issues, categories..." />
+          <button class="btn" onclick="search()">Search</button>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <h3 class="section-title">Browse by Category</h3>
+      <div class="grid">
+        <div class="card"><strong>Legal</strong><p style="color:#64748b;font-size:.9rem">View issues</p></div>
+        <div class="card"><strong>Finance</strong><p style="color:#64748b;font-size:.9rem">View issues</p></div>
+        <div class="card"><strong>Health</strong><p style="color:#64748b;font-size:.9rem">View issues</p></div>
+        <div class="card"><strong>Tech</strong><p style="color:#64748b;font-size:.9rem">View issues</p></div>
+        <div class="card"><strong>Daily Life</strong><p style="color:#64748b;font-size:.9rem">View issues</p></div>
+        <div class="card"><strong>Education</strong><p style="color:#64748b;font-size:.9rem">View issues</p></div>
+      </div>
+      <div class="grid">
+        <div class="card"><h4>Submit</h4><p style="color:#64748b;font-size:.9rem">Describe your issue in minutes.</p></div>
+        <div class="card"><h4>Get Help</h4><p style="color:#64748b;font-size:.9rem">Verified experts reply fast.</p></div>
+        <div class="card"><h4>Resolve</h4><p style="color:#64748b;font-size:.9rem">Track status to closure.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="feed" class="hidden">
+    <div class="container" style="padding-top:2rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <h2 style="font-size:1.5rem;font-weight:700">Issues</h2>
+        <button class="btn" onclick="show('submit')">New Issue</button>
+      </div>
+      <div id="issueList"></div>
+    </div>
+  </section>
+
+  <section id="submit" class="hidden">
+    <div class="container" style="padding-top:2rem">
+      <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:1rem;text-align:center">Submit an Issue</h2>
+      <form class="form" onsubmit="return submitIssue(event)">
+        <label>Title</label>
+        <input id="title" required placeholder="Brief summary of your issue" />
+        <div class="row">
+          <div>
+            <label>Category</label>
+            <select id="category">
+              <option>Legal</option><option>Finance</option><option>Health</option><option>Tech</option><option>Daily Life</option><option>Education</option>
+            </select>
+          </div>
+          <div>
+            <label>Severity</label>
+            <select id="severity">
+              <option>Low</option><option selected>Medium</option><option>High</option><option>Urgent</option>
+            </select>
+          </div>
+        </div>
+        <label>Details</label>
+        <textarea id="details" required placeholder="Describe the issue in detail..."></textarea>
+        <button class="btn" style="width:100%;margin-top:1rem" type="submit">Submit Issue</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>© 2026 IssueSolver</footer>
+
+<script>
+  const issues = [
+    { id:1, title:"Landlord refusing to return deposit", category:"Legal", severity:"High", status:"Open", votes:12, replies:3 },
+    { id:2, title:"Unexpected medical bill after ER visit", category:"Health", severity:"Urgent", status:"In Progress", votes:8, replies:5 },
+    { id:3, title:"Laptop won't boot after update", category:"Tech", severity:"Medium", status:"Resolved", votes:4, replies:2 },
+  ];
+  const color = { Open:"open", "In Progress":"progress", Resolved:"resolved", Closed:"resolved" };
+
+  function show(name) {
+    ["home","feed","submit"].forEach(s => document.getElementById(s).classList.toggle("hidden", s !== name));
+    ["home","feed","submit"].forEach(s => document.getElementById("t-"+s).classList.toggle("active", s === name));
+    if (name === "feed") renderFeed();
+  }
+  function renderFeed() {
+    const list = document.getElementById("issueList");
+    list.innerHTML = issues.map(i => `
+      <div class="issue">
+        <div>
+          <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.25rem">
+            <span class="badge ${color[i.status]}">${i.status}</span>
+            <span style="font-size:.8rem;color:#64748b">${i.category} • ${i.severity}</span>
+          </div>
+          <strong>${i.title}</strong>
+        </div>
+        <div style="font-size:.85rem;color:#64748b;display:flex;gap:.75rem">
+          <span>👍 ${i.votes}</span><span>💬 ${i.replies}</span>
+        </div>
+      </div>`).join("");
+  }
+  function submitIssue(e) {
+    e.preventDefault();
+    const newIssue = {
+      id: issues.length + 1,
+      title: document.getElementById("title").value,
+      category: document.getElementById("category").value,
+      severity: document.getElementById("severity").value,
+      status: "Open",
+      votes: 0,
+      replies: 0,
+    };
+    issues.unshift(newIssue);
+    show("feed");
+    return false;
+  }
+  function search() {
+    const q = document.getElementById("q").value.toLowerCase();
+    const filtered = issues.filter(i => i.title.toLowerCase().includes(q) || i.category.toLowerCase().includes(q));
+    show("feed");
+    const list = document.getElementById("issueList");
+    list.innerHTML = filtered.map(i => `
+      <div class="issue">
+        <div>
+          <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.25rem">
+            <span class="badge ${color[i.status]}">${i.status}</span>
+            <span style="font-size:.8rem;color:#64748b">${i.category} • ${i.severity}</span>
+          </div>
+          <strong>${i.title}</strong>
+        </div>
+        <div style="font-size:.85rem;color:#64748b;display:flex;gap:.75rem">
+          <span>👍 ${i.votes}</span><span>💬 ${i.replies}</span>
+        </div>
+      </div>`).join("");
+  }
+</script>
+</body>
+</html>
